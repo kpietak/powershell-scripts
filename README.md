@@ -19,12 +19,12 @@ Specify **to** field
 send-mail -to abc@example.com
 ```
 
-Add **attachments** can be performed in two ways:
+Adding **attachments** can be performed in two ways:
 
 1) via named parameter:
 
 ```
-send-mail' -attachment sample_file.txt
+send-mail -attachment sample_file.txt
 ```
 
 2) via pipe - in this case many files can be attached as shown below:
@@ -32,3 +32,4 @@ send-mail' -attachment sample_file.txt
 ```
 ls *.pdf | send-mail
 ```
+
