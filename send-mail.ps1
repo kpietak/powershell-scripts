@@ -1,35 +1,41 @@
-﻿# TODO add other options available by Thunderbird or Postbox
-# The full list is available at http://kb.mozillazine.org/Command_line_arguments_(Thunderbird)
-# DONE allow to get many attachments via pipe, eg. ls *.txt | send-mail.ps1
-param(
+﻿param(
     [string]$attachment='',
-    [string]$to='',
+    [string]$to='', # used to specify the email of the recipient
+    [string]$cc='', # used to specify the email of the recipient of a copy of the mail
+    [string]$bcc='', # used to specify the email of the recipient of a blind copy of the mail*
+    [string]$subject='', # subject of the mail
+    [string]$body='', # body of the mail
     [string]$exec = 'C:\Program Files (x86)\Postbox\postbox.exe'
     )
 
-$commandBegin = "& `"$exec`" -compose "
-# ------ Read params from input -------------
+$cmdBeginning = "& `"$exec`" -compose "
 
+# ------ Read email fields -------------
 
-$params = New-Object Collections.Generic.List[string]
+$cmdParams = New-Object Collections.Generic.List[string]
 
-# Assign TO parameter
-if ($to) {
-    $params.Add("to=`'$to`'");
+$emailFields = @{"to"=$to; "cc"=$cc; "bcc"=$bcc; "subject"= $subject; "body" = $body}
+
+$emailFields.Keys | % {     $value = $emailFields[$_] 
+    if ($value) {    
+        $cmdParams.Add("$_=`'$value`'");
+     }
+
 }
 
-# Assign ATTACHMENTS parameter
+# Assign ATTACHMENTS
 if ($attachment) {
 
     if (Test-Path($attachment)) {
         $fullPath = (Get-Item $attachment).FullName;
-        $params.Add("attachment=`'$fullPath`'"); 
+        $cmdParams.Add("attachment=`'$fullPath`'"); 
         
     } else {
         echo "The path `"$file`" does not exists."
     }
-} else {
+} elseif (@($input).Count -gt 0) {
     # Try to assign ATTACHMENTS parameter from pipeline 
+    $input.reset()
     $attachParam = "attachment=`'"
     foreach ($filename in $input) {
          $fullPath = $filename.FullName + ","
@@ -38,20 +44,20 @@ if ($attachment) {
     }
 
     $attachParam += "`'"
-    $params.Add($attachParam)
+    $cmdParams.Add($attachParam)
 }
 
 
 # ----- Build & run command -------------
 
-$command = $commandBegin;
+$command = $cmdBeginning;
 
-# TODO: if params list is empty don't place "" in the command
-$command += "`""
-foreach ($param in $params) {
-        $command += $param + ","
+if ($cmdParams.Count -gt 0) {
+    $command += "`""
+    foreach ($param in $cmdParams) {
+            $command += $param + ","
+    }
+    $command += "`""
 }
-$command += "`""
-
 
 Invoke-Expression $command;
