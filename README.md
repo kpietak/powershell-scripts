@@ -4,7 +4,7 @@ Common utility scripts in Powershell
 send-mail - sending e-mails via Thunderbird
 --------------------------------------------
 
-This script allows to open a compose window of Mozilla Thunderbird or other apps based on MT (such as Postbox).
+This script allows to open a compose window of Mozilla Thunderbird or other apps based on MT (such as Postbox) using most of the parameters described at http://kb.mozillazine.org/Command_line_arguments_(Thunderbird) in section _Compose new mail with command line_
 
 ### Usage
 
