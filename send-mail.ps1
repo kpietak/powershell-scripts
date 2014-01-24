@@ -2,8 +2,8 @@
 # The full list is available at http://kb.mozillazine.org/Command_line_arguments_(Thunderbird)
 # DONE allow to get many attachments via pipe, eg. ls *.txt | send-mail.ps1
 param(
-    [string]$to='',
     [string]$attachment='',
+    [string]$to='',
     [string]$exec = 'C:\Program Files (x86)\Postbox\postbox.exe'
     )
 
@@ -40,6 +40,7 @@ if ($attachment) {
     $attachParam += "`'"
     $params.Add($attachParam)
 }
+
 
 # ----- Build & run command -------------
 
