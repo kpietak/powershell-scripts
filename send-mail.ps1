@@ -5,10 +5,23 @@
     [string]$bcc='', # used to specify the email of the recipient of a blind copy of the mail*
     [string]$subject='', # subject of the mail
     [string]$body='', # body of the mail
-    [string]$exec = 'C:\Program Files (x86)\Postbox\postbox.exe'
+    [string]$exec='' # mail client, if not default type path to Thunderbird installation, eg. C:\Program Files (x86)\Mozilla\Thunderbird\thunderbird.exe
     )
 
-$cmdBeginning = "& `"$exec`" -compose "
+# ------ Get default mail client -------
+
+if ($exec) {
+    $MailClient = $exec + "-compose `"%1`""
+}
+else {
+    $node = Get-ItemProperty HKCU:\Software\Classes\mailto\shell\open\command
+    if (!$node) {
+          $node = Get-ItemProperty HKLM:\Software\Classes\mailto\shell\open\command
+    }
+
+    $MailClient = $node.'(default)'
+}
+# TODO check if default client is compatible
 
 # ------ Read email fields -------------
 
@@ -39,7 +52,6 @@ if ($attachment) {
     $attachParam = "attachment=`'"
     foreach ($filename in $input) {
          $fullPath = $filename.FullName + ","
-         echo $fullPath
          $attachParam += $fullPath
     }
 
@@ -50,14 +62,14 @@ if ($attachment) {
 
 # ----- Build & run command -------------
 
-$command = $cmdBeginning;
+$command = ''
 
 if ($cmdParams.Count -gt 0) {
-    $command += "`""
     foreach ($param in $cmdParams) {
             $command += $param + ","
     }
-    $command += "`""
 }
 
-Invoke-Expression $command;
+$command = $MailClient -replace "`%1", $command
+
+Invoke-Expression "& $command"
