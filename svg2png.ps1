@@ -6,7 +6,10 @@
 foreach ($filename in Get-ChildItem $path) {
     if ($filename.toString().EndsWith('.svg')) {
         
+
         $targetName = $filename.BaseName + ".png";
+
+        echo "Converting $filename ..."
 
         $command = "& `"$exec`" -z -e `"$targetName`" -w 64 `"$filename`""; 
         Invoke-Expression $command;
